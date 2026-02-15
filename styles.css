@@ -309,22 +309,30 @@ strong { font-weight: 600; }
 /* ============ CLIENTS ============ */
 .clients { background: var(--white); }
 .clients__grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem;
 }
-.client-card {
+.clients__grid .client-logo:first-child {
+    grid-column: span 2;
+}
+.client-logo {
     background: var(--off-white); border: 1px solid var(--gray-200);
-    border-radius: 12px; padding: 1.5rem; text-align: center;
+    border-radius: 12px; padding: 2.25rem 1.5rem;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; gap: 0.4rem;
     transition: all var(--transition);
 }
-.client-card:hover { border-color: var(--gold); transform: translateY(-2px); }
-.client-card__name {
-    display: block; font-size: 1rem; font-weight: 700; color: var(--navy);
-    margin-bottom: 0.25rem;
+.client-logo:hover {
+    border-color: var(--gold); background: var(--white);
+    box-shadow: 0 8px 28px rgba(0,0,0,0.05);
 }
-.client-card__type {
-    font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
-    letter-spacing: 0.1em; color: var(--gold);
+.client-logo__name {
+    font-family: var(--font-head); font-size: 1.25rem; font-weight: 800;
+    color: var(--navy); letter-spacing: -0.01em; line-height: 1.2;
+}
+.clients__grid .client-logo:first-child .client-logo__name { font-size: 1.75rem; }
+.client-logo__type {
+    font-size: 0.6875rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.12em; color: var(--gold);
 }
 
 /* ============ TESTIMONIALS ============ */
@@ -447,6 +455,8 @@ strong { font-weight: 600; }
     .impact__grid { grid-template-columns: repeat(2, 1fr); }
     .testimonials__grid { grid-template-columns: 1fr; }
     .recognition__grid { grid-template-columns: 1fr; }
+    .clients__grid { grid-template-columns: repeat(2, 1fr); }
+    .clients__grid .client-logo:first-child { grid-column: span 2; }
 }
 
 @media (max-width: 768px) {
@@ -467,6 +477,8 @@ strong { font-weight: 600; }
     .expertise__grid { grid-template-columns: 1fr; }
     .education__grid { grid-template-columns: 1fr; }
     .contact__grid { grid-template-columns: 1fr; }
+    .clients__grid { grid-template-columns: 1fr; }
+    .clients__grid .client-logo:first-child { grid-column: span 1; }
     .timeline { padding-left: 2rem; }
     .timeline__top { flex-direction: column; gap: 0.25rem; }
     .timeline__date { padding-top: 0; }

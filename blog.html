@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insights | Sarah Eileen Mehta</title>
+    <meta name="description" content="Thought leadership on enterprise risk management, internal controls, process mapping, and federal consulting from Sarah Eileen Mehta.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="blog.css">
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="nav nav--scrolled" id="nav">
+    <div class="nav__container">
+        <a href="index.html" class="nav__logo">S<span class="nav__logo-accent">M</span></a>
+        <button class="nav__toggle" id="navToggle" aria-label="Toggle navigation">
+            <span></span><span></span><span></span>
+        </button>
+        <ul class="nav__links" id="navLinks">
+            <li><a href="index.html#about">About</a></li>
+            <li><a href="index.html#experience">Experience</a></li>
+            <li><a href="blog.html" class="nav__links--active">Insights</a></li>
+            <li><a href="index.html#contact" class="nav__cta">Let's Connect</a></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Blog Header -->
+<header class="blog-header">
+    <div class="container">
+        <span class="section__label">Insights</span>
+        <h1 class="blog-header__title">Thought <span class="accent">Leadership</span></h1>
+        <p class="blog-header__subtitle">Perspectives on enterprise risk, internal controls, process design, and lessons from consulting for some of the world's most complex organizations.</p>
+    </div>
+</header>
+
+<!-- Blog Grid -->
+<section class="section blog-list">
+    <div class="container">
+        <div class="blog-grid">
+
+            <a href="blog/nasa-engagement-spotlight.html" class="blog-card blog-card--featured">
+                <div class="blog-card__image">
+                    <span class="blog-card__tag">Featured</span>
+                </div>
+                <div class="blog-card__body">
+                    <span class="blog-card__date">June 2023</span>
+                    <h2 class="blog-card__title">Engagement Spotlight: Keeping NASA Grounded</h2>
+                    <p class="blog-card__excerpt">An interview featured in the Guidehouse Transportation Account Newsletter on the exciting work advancing Integrated Management System and Internal Control services for NASA.</p>
+                    <span class="blog-card__link">Read Article</span>
+                </div>
+            </a>
+
+            <a href="blog/internal-controls-federal-agencies.html" class="blog-card">
+                <div class="blog-card__body">
+                    <span class="blog-card__date">2024</span>
+                    <h2 class="blog-card__title">Why Internal Controls Matter More Than Ever at Federal Agencies</h2>
+                    <p class="blog-card__excerpt">From Statement of Assurance cycles to fraud risk assessments, strong internal control programs are the backbone of public trust in government operations.</p>
+                    <span class="blog-card__link">Read Article</span>
+                </div>
+            </a>
+
+            <a href="blog/power-of-process-mapping.html" class="blog-card">
+                <div class="blog-card__body">
+                    <span class="blog-card__date">2024</span>
+                    <h2 class="blog-card__title">The Power of Process Mapping: Turning Complexity Into Clarity</h2>
+                    <p class="blog-card__excerpt">How visual process design and decision trees transform chaotic workflows into scalable, repeatable systems that teams can actually follow.</p>
+                    <span class="blog-card__link">Read Article</span>
+                </div>
+            </a>
+
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container footer__inner">
+        <span class="footer__name">Sarah Eileen Mehta</span>
+        <span class="footer__copy">&copy; 2025 All rights reserved.</span>
+    </div>
+</footer>
+
+<script>
+const toggle = document.getElementById('navToggle');
+const links = document.getElementById('navLinks');
+toggle.addEventListener('click', () => {
+    links.classList.toggle('nav__links--open');
+    toggle.classList.toggle('nav__toggle--active');
+});
+document.querySelectorAll('.nav__links a').forEach(a => {
+    a.addEventListener('click', () => {
+        links.classList.remove('nav__links--open');
+        toggle.classList.remove('nav__toggle--active');
+    });
+});
+</script>
+
+</body>
+</html>
