@@ -358,6 +358,49 @@ strong { font-weight: 600; }
 .testimonial__author { display: block; font-size: 0.9375rem; font-weight: 700; color: var(--navy); }
 .testimonial__role { font-size: 0.8125rem; color: var(--gray-400); }
 
+/* ============ INSIGHTS PREVIEW ============ */
+.insights-preview { background: var(--white); }
+.insights__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+.insight-card {
+    background: var(--off-white); border: 1px solid var(--gray-200);
+    border-radius: 12px; padding: 1.75rem;
+    display: flex; flex-direction: column;
+    transition: all var(--transition); text-decoration: none;
+}
+.insight-card:hover {
+    border-color: var(--gold); transform: translateY(-3px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.06);
+}
+.insight-card__date {
+    font-size: 0.6875rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.12em; color: var(--gold); margin-bottom: 0.5rem;
+}
+.insight-card__title {
+    font-family: var(--font-head); font-size: 1.125rem; font-weight: 800;
+    color: var(--navy); line-height: 1.3; margin-bottom: 0.6rem;
+    letter-spacing: -0.01em;
+}
+.insight-card__excerpt {
+    font-size: 0.875rem; color: var(--text-light); line-height: 1.65;
+    flex: 1; margin-bottom: 1rem;
+}
+.insight-card__link {
+    font-size: 0.8125rem; font-weight: 700; color: var(--gold);
+    display: inline-flex; align-items: center; gap: 0.3rem;
+}
+.insight-card__link::after { content: '\2192'; transition: transform 0.25s ease; }
+.insight-card:hover .insight-card__link::after { transform: translateX(4px); }
+
+.insights__cta { text-align: center; margin-top: 2rem; }
+.btn--ghost-dark {
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 0.75rem 1.5rem; border-radius: 6px; font-size: 0.9375rem;
+    font-weight: 600; font-family: var(--font-body); cursor: pointer;
+    background: transparent; color: var(--navy); border: 1.5px solid var(--gray-200);
+    transition: all var(--transition);
+}
+.btn--ghost-dark:hover { border-color: var(--gold); color: var(--gold); }
+
 /* ============ RECOGNITION ============ */
 .recognition { background: var(--white); }
 .recognition__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; }
@@ -457,6 +500,7 @@ strong { font-weight: 600; }
     .recognition__grid { grid-template-columns: 1fr; }
     .clients__grid { grid-template-columns: repeat(2, 1fr); }
     .clients__grid .client-logo:first-child { grid-column: span 2; }
+    .insights__grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 768px) {
