@@ -165,10 +165,174 @@
 }
 .article__cta .btn { display: inline-flex; }
 
+/* --- Stats Banner --- */
+.stats-banner {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1.5rem; margin: 2.5rem 0; padding: 2rem;
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
+    border-radius: 14px;
+}
+.stat-item { text-align: center; }
+.stat-ring {
+    position: relative; width: 100px; height: 100px;
+    margin: 0 auto 0.75rem;
+}
+.stat-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.stat-ring__bg {
+    fill: none; stroke: rgba(255,255,255,0.1); stroke-width: 6;
+}
+.stat-ring__fill {
+    fill: none; stroke: var(--gold); stroke-width: 6;
+    stroke-linecap: round; stroke-dasharray: 283;
+    stroke-dashoffset: 283;
+    transition: stroke-dashoffset 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.stat-ring.animated .stat-ring__fill { stroke-dashoffset: var(--offset); }
+.stat-ring__value {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: var(--font-head); font-size: 1.5rem; font-weight: 800;
+    color: var(--gold);
+}
+.stat-ring__value span { font-size: 0.875rem; }
+.stat-item__label {
+    font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.1em; color: rgba(255,255,255,0.6); line-height: 1.4;
+}
+
+/* --- Bar Chart --- */
+.bar-chart {
+    margin: 2rem 0; padding: 2rem;
+    background: var(--off-white); border-radius: 14px;
+    border: 1px solid var(--gray-200);
+}
+.bar-chart__title {
+    font-family: var(--font-head); font-size: 1.125rem; font-weight: 700;
+    color: var(--navy); margin-bottom: 1.5rem;
+}
+.bar-chart__item { margin-bottom: 1rem; }
+.bar-chart__item:last-child { margin-bottom: 0; }
+.bar-chart__label {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 0.4rem;
+}
+.bar-chart__name {
+    font-size: 0.875rem; font-weight: 600; color: var(--text);
+}
+.bar-chart__value {
+    font-size: 0.8125rem; font-weight: 700; color: var(--gold);
+}
+.bar-chart__track {
+    height: 10px; background: var(--gray-200);
+    border-radius: 100px; overflow: hidden;
+}
+.bar-chart__fill {
+    height: 100%; border-radius: 100px;
+    background: linear-gradient(90deg, var(--navy) 0%, var(--navy-mid) 100%);
+    width: 0; transition: width 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.bar-chart__fill--gold {
+    background: linear-gradient(90deg, var(--gold) 0%, var(--gold-light) 100%);
+}
+.bar-chart.animated .bar-chart__fill { width: var(--width); }
+
+/* --- Deliverables Grid --- */
+.deliverables-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 1rem; margin: 2rem 0;
+}
+.deliverable-card {
+    padding: 1.25rem 1.25rem 1.25rem 1rem;
+    background: var(--off-white); border-radius: 10px;
+    border: 1px solid var(--gray-200);
+    border-left: 3px solid var(--gold);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.deliverable-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+}
+.deliverable-card__icon {
+    font-size: 1.5rem; margin-bottom: 0.5rem; display: block;
+}
+.deliverable-card__name {
+    font-size: 0.875rem; font-weight: 700; color: var(--navy);
+    line-height: 1.3; margin-bottom: 0.25rem;
+}
+.deliverable-card__desc {
+    font-size: 0.75rem; color: var(--text-light); line-height: 1.5;
+}
+
+/* --- Process Flow --- */
+.process-flow {
+    margin: 2.5rem 0; padding: 2rem;
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
+    border-radius: 14px;
+}
+.process-flow__title {
+    font-family: var(--font-head); font-size: 1.125rem; font-weight: 700;
+    color: var(--white); text-align: center; margin-bottom: 1.5rem;
+}
+.process-flow__steps {
+    display: flex; align-items: flex-start; justify-content: center;
+    gap: 0; flex-wrap: wrap;
+}
+.process-flow__step {
+    display: flex; flex-direction: column; align-items: center;
+    text-align: center; flex: 0 0 auto; width: 120px;
+}
+.process-flow__icon {
+    width: 52px; height: 52px; border-radius: 50%;
+    background: rgba(201,168,76,0.15); border: 2px solid var(--gold);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.25rem; margin-bottom: 0.6rem;
+    transition: transform 0.3s ease, background 0.3s ease;
+}
+.process-flow__step:hover .process-flow__icon {
+    transform: scale(1.1); background: rgba(201,168,76,0.3);
+}
+.process-flow__label {
+    font-size: 0.6875rem; font-weight: 600; color: rgba(255,255,255,0.8);
+    text-transform: uppercase; letter-spacing: 0.08em; line-height: 1.3;
+}
+.process-flow__arrow {
+    display: flex; align-items: center; padding-top: 0.75rem;
+    color: var(--gold); font-size: 1.25rem; flex: 0 0 auto;
+}
+
+/* --- Percentage Callout --- */
+.pct-callout {
+    display: flex; align-items: center; gap: 1.5rem;
+    margin: 2rem 0; padding: 1.75rem 2rem;
+    background: var(--off-white); border-radius: 14px;
+    border: 1px solid var(--gray-200);
+}
+.pct-callout__number {
+    font-family: var(--font-head); font-size: 3rem; font-weight: 800;
+    color: var(--gold); line-height: 1; white-space: nowrap;
+}
+.pct-callout__number span { font-size: 1.75rem; }
+.pct-callout__text {
+    font-size: 0.9375rem; color: var(--text-light); line-height: 1.6;
+}
+.pct-callout__text strong { color: var(--navy); }
+
 /* --- Responsive --- */
 @media (max-width: 768px) {
     .blog-grid { grid-template-columns: 1fr; }
     .blog-card--featured { grid-column: span 1; flex-direction: column; }
     .blog-card--featured .blog-card__image { min-height: 180px; }
     .article__container { width: 90%; }
+    .stats-banner { grid-template-columns: repeat(2, 1fr); padding: 1.5rem; gap: 1.25rem; }
+    .stat-ring { width: 80px; height: 80px; }
+    .stat-ring__value { font-size: 1.25rem; }
+    .deliverables-grid { grid-template-columns: 1fr; }
+    .process-flow__steps { gap: 0.25rem; }
+    .process-flow__step { width: 90px; }
+    .process-flow__icon { width: 42px; height: 42px; font-size: 1rem; }
+    .process-flow__label { font-size: 0.625rem; }
+    .process-flow__arrow { font-size: 1rem; }
+    .pct-callout { flex-direction: column; text-align: center; gap: 0.75rem; }
+    .pct-callout__number { font-size: 2.5rem; }
+    .bar-chart { padding: 1.25rem; }
 }
