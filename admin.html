@@ -451,18 +451,18 @@
 
     <div class="form-group">
         <label>upload pdf to generate content 📄</label>
-        <div id="pdf-upload-area" style="border: 2px dashed var(--border); border-radius: 14px; padding: 1.5rem; text-align: center; cursor: pointer; transition: all 0.3s ease; background: var(--bg);">
-            <input type="file" id="pdf-input" accept=".pdf" multiple style="display:none;">
-            <div id="pdf-upload-label">
-                <span style="font-size: 2rem;">📄</span>
-                <p style="margin: 0.5rem 0 0; font-size: 0.875rem; color: var(--text-light);">drop PDFs or click to upload — multiple allowed</p>
-            </div>
-            <div id="pdf-loading" style="display:none;">
-                <span style="font-size: 1.5rem;">⏳</span>
-                <p style="margin: 0.5rem 0 0; font-size: 0.875rem; color: var(--text-light);">reading pdf & generating content...</p>
-            </div>
+        <input type="file" id="pdf-input" accept=".pdf" style="display:none;">
+        <div id="pdf-drop-zone" style="border: 2px dashed var(--border); border-radius: 14px; padding: 1.25rem; text-align: center; cursor: pointer; transition: all 0.3s ease; background: var(--bg);">
+            <span style="font-size: 1.75rem;">📄</span>
+            <p style="margin: 0.35rem 0 0; font-size: 0.875rem; color: var(--text-light);">drop a PDF or click to add</p>
         </div>
-        <p class="hint">upload a PDF to auto-generate the title and article content — you can edit before publishing</p>
+        <div id="pdf-list" style="margin-top: 0.75rem; display: flex; flex-direction: column; gap: 0.5rem;"></div>
+        <button type="button" id="pdf-generate-btn" style="display:none; margin-top: 0.75rem; width: 100%; padding: 0.75rem; border: none; border-radius: 12px; background: var(--matcha); color: white; font-family: var(--font); font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: all 0.3s ease;">✨ generate from PDFs</button>
+        <div id="pdf-loading" style="display:none; text-align:center; padding: 0.75rem;">
+            <span style="font-size: 1.25rem;">⏳</span>
+            <span style="font-size: 0.875rem; color: var(--text-light); margin-left: 0.5rem;">generating content from PDFs...</span>
+        </div>
+        <p class="hint">add PDFs one by one — click generate when ready. title & content will auto-fill.</p>
     </div>
 
     <div class="form-group">
@@ -559,43 +559,72 @@
 
 // PDF Upload Handler
 (function() {
-    var uploadArea = document.getElementById('pdf-upload-area');
+    var dropZone = document.getElementById('pdf-drop-zone');
     var pdfInput = document.getElementById('pdf-input');
-    var uploadLabel = document.getElementById('pdf-upload-label');
-    var loadingLabel = document.getElementById('pdf-loading');
+    var pdfList = document.getElementById('pdf-list');
+    var generateBtn = document.getElementById('pdf-generate-btn');
+    var loadingEl = document.getElementById('pdf-loading');
+    var pendingFiles = [];
 
-    uploadArea.addEventListener('click', function() { pdfInput.click(); });
-    uploadArea.addEventListener('dragover', function(e) { e.preventDefault(); uploadArea.style.borderColor = 'var(--matcha)'; });
-    uploadArea.addEventListener('dragleave', function() { uploadArea.style.borderColor = 'var(--border)'; });
-    uploadArea.addEventListener('drop', function(e) {
+    // Open file picker on click
+    dropZone.addEventListener('click', function() { pdfInput.click(); });
+
+    // Drag over style
+    dropZone.addEventListener('dragover', function(e) { e.preventDefault(); dropZone.style.borderColor = 'var(--matcha)'; });
+    dropZone.addEventListener('dragleave', function() { dropZone.style.borderColor = 'var(--border)'; });
+    dropZone.addEventListener('drop', function(e) {
         e.preventDefault();
-        uploadArea.style.borderColor = 'var(--border)';
+        dropZone.style.borderColor = 'var(--border)';
         var files = Array.from(e.dataTransfer.files).filter(function(f) { return f.type === 'application/pdf'; });
-        if (files.length) processPdfs(files);
+        files.forEach(addFile);
     });
 
+    // File picker change
     pdfInput.addEventListener('change', function() {
-        var files = Array.from(pdfInput.files);
-        if (files.length) processPdfs(files);
+        Array.from(pdfInput.files).forEach(addFile);
+        pdfInput.value = '';
     });
+
+    function addFile(file) {
+        // Avoid duplicates by name
+        if (pendingFiles.find(function(f) { return f.name === file.name; })) return;
+        pendingFiles.push(file);
+        renderList();
+    }
+
+    function removeFile(name) {
+        pendingFiles = pendingFiles.filter(function(f) { return f.name !== name; });
+        renderList();
+    }
+
+    function renderList() {
+        pdfList.innerHTML = '';
+        pendingFiles.forEach(function(file) {
+            var item = document.createElement('div');
+            item.style.cssText = 'display:flex; align-items:center; justify-content:space-between; padding: 0.6rem 0.9rem; background: var(--bg); border: 1.5px solid var(--border); border-radius: 10px; font-size: 0.875rem;';
+            item.innerHTML = '<span>📄 ' + file.name + '</span><button type="button" style="background:none; border:none; cursor:pointer; font-size:1rem; color:var(--text-light); padding:0;" data-name="' + file.name + '">✕</button>';
+            item.querySelector('button').addEventListener('click', function() { removeFile(this.dataset.name); });
+            pdfList.appendChild(item);
+        });
+        generateBtn.style.display = pendingFiles.length > 0 ? 'block' : 'none';
+    }
 
     function fileToBase64(file) {
         return new Promise(function(resolve, reject) {
             var reader = new FileReader();
-            reader.onload = function(e) { resolve(e.target.result.split(",")[1]); };
+            reader.onload = function(e) { resolve(e.target.result.split(',')[1]); };
             reader.onerror = reject;
             reader.readAsDataURL(file);
         });
     }
 
-    async function processPdfs(files) {
-        uploadLabel.style.display = 'none';
-        loadingLabel.innerHTML = '<span style="font-size: 1.5rem;">⏳</span><p style="margin: 0.5rem 0 0; font-size: 0.875rem; color: var(--text-light);">reading ' + files.length + ' pdf' + (files.length > 1 ? 's' : '') + ' & generating content...</p>';
-        loadingLabel.style.display = 'block';
-        uploadArea.style.borderColor = 'var(--matcha)';
+    generateBtn.addEventListener('click', async function() {
+        if (!pendingFiles.length) return;
+        generateBtn.style.display = 'none';
+        loadingEl.style.display = 'block';
 
         try {
-            var pdfs = await Promise.all(files.map(async function(f) {
+            var pdfs = await Promise.all(pendingFiles.map(async function(f) {
                 return { base64: await fileToBase64(f), filename: f.name };
             }));
 
@@ -618,19 +647,18 @@
                     var editor = document.getElementById('editor');
                     if (editor) editor.innerHTML = data.content;
                 }
-                var names = files.map(function(f) { return f.name; }).join(', ');
-                uploadLabel.innerHTML = '<span style="font-size: 2rem;">✅</span><p style="margin: 0.5rem 0 0; font-size: 0.875rem; color: var(--matcha-dark);">' + files.length + ' pdf' + (files.length > 1 ? 's' : '') + ' processed</p>';
+                // Clear the list after success
+                pendingFiles = [];
+                renderList();
+                pdfList.innerHTML = '<div style="text-align:center; font-size:0.875rem; color:var(--matcha-dark); padding:0.5rem;">✅ done! title & content filled in below.</div>';
             }
-
-            loadingLabel.style.display = 'none';
-            uploadLabel.style.display = 'block';
-            uploadArea.style.borderColor = 'var(--border)';
         } catch(err) {
             alert('Failed: ' + err.message);
-            loadingLabel.style.display = 'none';
-            uploadLabel.style.display = 'block';
+            renderList();
         }
-    }
+
+        loadingEl.style.display = 'none';
+    });
 })();
 
 // Click sparkle burst
