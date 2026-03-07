@@ -450,6 +450,22 @@
     </div>
 
     <div class="form-group">
+        <label>upload pdf to generate content 📄</label>
+        <div id="pdf-upload-area" style="border: 2px dashed var(--border); border-radius: 14px; padding: 1.5rem; text-align: center; cursor: pointer; transition: all 0.3s ease; background: var(--bg);">
+            <input type="file" id="pdf-input" accept=".pdf" style="display:none;">
+            <div id="pdf-upload-label">
+                <span style="font-size: 2rem;">📄</span>
+                <p style="margin: 0.5rem 0 0; font-size: 0.875rem; color: var(--text-light);">drop a PDF or click to upload</p>
+            </div>
+            <div id="pdf-loading" style="display:none;">
+                <span style="font-size: 1.5rem;">⏳</span>
+                <p style="margin: 0.5rem 0 0; font-size: 0.875rem; color: var(--text-light);">reading pdf & generating content...</p>
+            </div>
+        </div>
+        <p class="hint">upload a PDF to auto-generate the title and article content — you can edit before publishing</p>
+    </div>
+
+    <div class="form-group">
         <label>article content 🐱</label>
         <div id="editor"></div>
     </div>
@@ -538,6 +554,79 @@
         s.style.animationDuration = (6 + Math.random() * 6) + 's';
         s.style.fontSize = (0.8 + Math.random() * 0.8) + 'rem';
         bg.appendChild(s);
+    }
+})();
+
+// PDF Upload Handler
+(function() {
+    var uploadArea = document.getElementById('pdf-upload-area');
+    var pdfInput = document.getElementById('pdf-input');
+    var uploadLabel = document.getElementById('pdf-upload-label');
+    var loadingLabel = document.getElementById('pdf-loading');
+
+    uploadArea.addEventListener('click', function() { pdfInput.click(); });
+    uploadArea.addEventListener('dragover', function(e) { e.preventDefault(); uploadArea.style.borderColor = 'var(--matcha)'; });
+    uploadArea.addEventListener('dragleave', function() { uploadArea.style.borderColor = 'var(--border)'; });
+    uploadArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        uploadArea.style.borderColor = 'var(--border)';
+        var file = e.dataTransfer.files[0];
+        if (file && file.type === 'application/pdf') processPdf(file);
+    });
+
+    pdfInput.addEventListener('change', function() {
+        if (pdfInput.files[0]) processPdf(pdfInput.files[0]);
+    });
+
+    async function processPdf(file) {
+        var password = adminPassword;
+        if (!password) { password = prompt('enter admin password:'); }
+
+        uploadLabel.style.display = 'none';
+        loadingLabel.style.display = 'block';
+        uploadArea.style.borderColor = 'var(--matcha)';
+
+        try {
+            var reader = new FileReader();
+            reader.onload = async function(e) {
+                var base64 = e.target.result.split(',')[1];
+
+                var res = await fetch('/api/pdf-to-content', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: password, pdfBase64: base64, filename: file.name })
+                });
+
+                var data = await res.json();
+
+                if (data.error) {
+                    alert('Error: ' + data.error);
+                } else {
+                    // Populate title field
+                    var titleInput = document.getElementById('title');
+                    if (titleInput && data.title) titleInput.value = data.title;
+
+                    // Populate editor (Quill or textarea)
+                    if (window.quill && data.content) {
+                        quill.clipboard.dangerouslyPasteHTML(data.content);
+                    } else {
+                        var editor = document.getElementById('editor');
+                        if (editor) editor.innerHTML = data.content;
+                    }
+
+                    uploadLabel.innerHTML = '<span style="font-size: 2rem;">✅</span><p style="margin: 0.5rem 0 0; font-size: 0.875rem; color: var(--matcha-dark);">pdf processed: ' + file.name + '</p>';
+                }
+
+                loadingLabel.style.display = 'none';
+                uploadLabel.style.display = 'block';
+                uploadArea.style.borderColor = 'var(--border)';
+            };
+            reader.readAsDataURL(file);
+        } catch(err) {
+            alert('Failed: ' + err.message);
+            loadingLabel.style.display = 'none';
+            uploadLabel.style.display = 'block';
+        }
     }
 })();
 
