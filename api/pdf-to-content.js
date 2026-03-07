@@ -1,12 +1,12 @@
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { password, pdfBase64, filename } = req.body;
+  const { password, pdfs } = req.body; // pdfs = [{base64, filename}, ...]
 
   if (password !== process.env.ADMIN_PASSWORD) {
     return res.status(401).json({ error: 'Invalid password' });
   }
-  if (!pdfBase64) return res.status(400).json({ error: 'No PDF provided' });
+  if (!pdfs || !pdfs.length) return res.status(400).json({ error: 'No PDFs provided' });
 
   const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 
@@ -25,23 +25,24 @@ module.exports = async function handler(req, res) {
         messages: [{
           role: 'user',
           content: [
-            {
+            ...pdfs.map(pdf => ({
               type: 'document',
               source: {
                 type: 'base64',
                 media_type: 'application/pdf',
-                data: pdfBase64
+                data: pdf.base64
               }
-            },
+            })),
             {
               type: 'text',
               text: `You are a content writer for Sarah Eileen Mehta's professional portfolio blog. Sarah is a strategic operations and enterprise risk leader with 6+ years experience across Big 4 consulting, federal agencies (NASA, DOI, FHWA), and Fortune 500 clients.
 
-Based on this PDF document, generate a professional blog post that:
+Based on the ${pdfs.length > 1 ? `${pdfs.length} PDF documents above (synthesize all of them into one cohesive article)` : 'PDF document above'}, generate a professional blog post that:
 1. Is written in first person from Sarah's perspective
-2. Highlights key insights, data points, and outcomes from the document
+2. Highlights key insights, data points, and outcomes
 3. Positions Sarah as a thought leader in strategic operations and risk management
 4. Sounds natural and authoritative, not like a summary
+${pdfs.length > 1 ? '5. Weaves insights from all documents together naturally — do not treat them as separate sections' : ''}
 
 Return a JSON object with exactly these keys:
 {

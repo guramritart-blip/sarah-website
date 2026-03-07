@@ -452,10 +452,10 @@
     <div class="form-group">
         <label>upload pdf to generate content 📄</label>
         <div id="pdf-upload-area" style="border: 2px dashed var(--border); border-radius: 14px; padding: 1.5rem; text-align: center; cursor: pointer; transition: all 0.3s ease; background: var(--bg);">
-            <input type="file" id="pdf-input" accept=".pdf" style="display:none;">
+            <input type="file" id="pdf-input" accept=".pdf" multiple style="display:none;">
             <div id="pdf-upload-label">
                 <span style="font-size: 2rem;">📄</span>
-                <p style="margin: 0.5rem 0 0; font-size: 0.875rem; color: var(--text-light);">drop a PDF or click to upload</p>
+                <p style="margin: 0.5rem 0 0; font-size: 0.875rem; color: var(--text-light);">drop PDFs or click to upload — multiple allowed</p>
             </div>
             <div id="pdf-loading" style="display:none;">
                 <span style="font-size: 1.5rem;">⏳</span>
@@ -570,58 +570,61 @@
     uploadArea.addEventListener('drop', function(e) {
         e.preventDefault();
         uploadArea.style.borderColor = 'var(--border)';
-        var file = e.dataTransfer.files[0];
-        if (file && file.type === 'application/pdf') processPdf(file);
+        var files = Array.from(e.dataTransfer.files).filter(function(f) { return f.type === 'application/pdf'; });
+        if (files.length) processPdfs(files);
     });
 
     pdfInput.addEventListener('change', function() {
-        if (pdfInput.files[0]) processPdf(pdfInput.files[0]);
+        var files = Array.from(pdfInput.files);
+        if (files.length) processPdfs(files);
     });
 
-    async function processPdf(file) {
-        var password = adminPassword;
-        if (!password) { password = prompt('enter admin password:'); }
+    function fileToBase64(file) {
+        return new Promise(function(resolve, reject) {
+            var reader = new FileReader();
+            reader.onload = function(e) { resolve(e.target.result.split(",")[1]); };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
 
+    async function processPdfs(files) {
         uploadLabel.style.display = 'none';
+        loadingLabel.innerHTML = '<span style="font-size: 1.5rem;">⏳</span><p style="margin: 0.5rem 0 0; font-size: 0.875rem; color: var(--text-light);">reading ' + files.length + ' pdf' + (files.length > 1 ? 's' : '') + ' & generating content...</p>';
         loadingLabel.style.display = 'block';
         uploadArea.style.borderColor = 'var(--matcha)';
 
         try {
-            var reader = new FileReader();
-            reader.onload = async function(e) {
-                var base64 = e.target.result.split(',')[1];
+            var pdfs = await Promise.all(files.map(async function(f) {
+                return { base64: await fileToBase64(f), filename: f.name };
+            }));
 
-                var res = await fetch('/api/pdf-to-content', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ password: password, pdfBase64: base64, filename: file.name })
-                });
+            var res = await fetch('/api/pdf-to-content', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password: adminPassword, pdfs: pdfs })
+            });
 
-                var data = await res.json();
+            var data = await res.json();
 
-                if (data.error) {
-                    alert('Error: ' + data.error);
+            if (data.error) {
+                alert('Error: ' + data.error);
+            } else {
+                var titleInput = document.getElementById('title');
+                if (titleInput && data.title) titleInput.value = data.title;
+                if (window.quill && data.content) {
+                    quill.clipboard.dangerouslyPasteHTML(data.content);
                 } else {
-                    // Populate title field
-                    var titleInput = document.getElementById('title');
-                    if (titleInput && data.title) titleInput.value = data.title;
-
-                    // Populate editor (Quill or textarea)
-                    if (window.quill && data.content) {
-                        quill.clipboard.dangerouslyPasteHTML(data.content);
-                    } else {
-                        var editor = document.getElementById('editor');
-                        if (editor) editor.innerHTML = data.content;
-                    }
-
-                    uploadLabel.innerHTML = '<span style="font-size: 2rem;">✅</span><p style="margin: 0.5rem 0 0; font-size: 0.875rem; color: var(--matcha-dark);">pdf processed: ' + file.name + '</p>';
+                    var editor = document.getElementById('editor');
+                    if (editor) editor.innerHTML = data.content;
                 }
+                var names = files.map(function(f) { return f.name; }).join(', ');
+                uploadLabel.innerHTML = '<span style="font-size: 2rem;">✅</span><p style="margin: 0.5rem 0 0; font-size: 0.875rem; color: var(--matcha-dark);">' + files.length + ' pdf' + (files.length > 1 ? 's' : '') + ' processed</p>';
+            }
 
-                loadingLabel.style.display = 'none';
-                uploadLabel.style.display = 'block';
-                uploadArea.style.borderColor = 'var(--border)';
-            };
-            reader.readAsDataURL(file);
+            loadingLabel.style.display = 'none';
+            uploadLabel.style.display = 'block';
+            uploadArea.style.borderColor = 'var(--border)';
         } catch(err) {
             alert('Failed: ' + err.message);
             loadingLabel.style.display = 'none';
