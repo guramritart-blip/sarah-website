@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sarah's Blog Studio</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+    <style>
+        :root {
+            --matcha: #8fbc8f;
+            --matcha-dark: #6b9e6b;
+            --matcha-light: #c8e6c8;
+            --matcha-cream: #f0f7f0;
+            --pink: #f2a6b7;
+            --pink-light: #fce4ec;
+            --pink-dark: #e88da1;
+            --cream: #fefcf6;
+            --lavender: #d4c5f9;
+            --lavender-light: #ede7fb;
+            --text: #4a4a5a;
+            --text-light: #8a8a9a;
+            --white: #ffffff;
+            --border: #e8e0d8;
+            --font: 'Nunito', sans-serif;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: var(--font); background: var(--cream); color: var(--text);
+            min-height: 100vh; overflow-x: hidden;
+        }
+
+        /* Sparkles */
+        .sparkle {
+            position: fixed; pointer-events: none; z-index: 9999;
+            animation: sparkle-fall linear forwards;
+        }
+        @keyframes sparkle-fall {
+            0% { opacity: 1; transform: translateY(0) rotate(0deg) scale(1); }
+            100% { opacity: 0; transform: translateY(120px) rotate(360deg) scale(0); }
+        }
+        .sparkle-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0; overflow: hidden;
+        }
+        .sparkle-bg span {
+            position: absolute; font-size: 1rem; opacity: 0.15;
+            animation: float 8s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+
+        /* Header */
+        .admin-header {
+            background: linear-gradient(135deg, var(--matcha) 0%, var(--matcha-dark) 50%, var(--pink) 100%);
+            padding: 2rem 0; text-align: center; position: relative; z-index: 1;
+        }
+        .admin-header h1 {
+            font-size: 1.75rem; color: var(--white); font-weight: 800;
+        }
+        .admin-header p { color: rgba(255,255,255,0.7); font-size: 0.875rem; margin-top: 0.25rem; }
+
+        /* Steps */
+        .steps {
+            display: flex; justify-content: center; gap: 1.5rem;
+            padding: 1.25rem 0; background: var(--white);
+            border-bottom: 2px dashed var(--matcha-light); position: relative; z-index: 1;
+        }
+        .step-indicator {
+            display: flex; align-items: center; gap: 0.5rem;
+            font-size: 0.8125rem; font-weight: 700; color: var(--text-light);
+            transition: all 0.4s ease;
+        }
+        .step-indicator.active { color: var(--matcha-dark); transform: scale(1.05); }
+        .step-indicator.done { color: var(--pink-dark); }
+        .step-num {
+            width: 32px; height: 32px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.9rem; transition: all 0.4s ease;
+            background: var(--matcha-cream); color: var(--text-light);
+        }
+        .step-indicator.active .step-num {
+            background: var(--matcha); color: var(--white);
+            box-shadow: 0 0 12px rgba(143,188,143,0.5);
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+        .step-indicator.done .step-num {
+            background: var(--pink); color: var(--white);
+        }
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 12px rgba(143,188,143,0.3); }
+            50% { box-shadow: 0 0 20px rgba(143,188,143,0.6); }
+        }
+
+        /* Form */
+        .admin-form {
+            max-width: 800px; margin: 2rem auto; padding: 0 1.5rem;
+            position: relative; z-index: 1;
+            animation: slide-up 0.5s ease-out;
+        }
+        @keyframes slide-up {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label {
+            display: block; font-size: 0.8125rem; font-weight: 800;
+            color: var(--matcha-dark); text-transform: uppercase;
+            letter-spacing: 0.08em; margin-bottom: 0.5rem;
+        }
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%; padding: 0.85rem 1rem;
+            border: 2px solid var(--border); border-radius: 14px;
+            font-family: var(--font); font-size: 0.9375rem;
+            color: var(--text); background: var(--white);
+            transition: all 0.3s ease;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none; border-color: var(--matcha);
+            box-shadow: 0 0 0 4px rgba(143,188,143,0.15);
+        }
+        .form-group textarea { min-height: 80px; resize: vertical; }
+        .form-group .hint { font-size: 0.75rem; color: var(--text-light); margin-top: 0.35rem; }
+
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+        /* Toggle */
+        .toggle-group { display: flex; align-items: center; gap: 0.75rem; }
+        .toggle { position: relative; width: 48px; height: 26px; }
+        .toggle input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider {
+            position: absolute; cursor: pointer; inset: 0;
+            background: var(--border); border-radius: 100px; transition: 0.3s;
+        }
+        .toggle-slider::before {
+            content: ''; position: absolute; height: 20px; width: 20px;
+            left: 3px; bottom: 3px; background: var(--white);
+            border-radius: 50%; transition: 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .toggle input:checked + .toggle-slider { background: var(--pink); }
+        .toggle input:checked + .toggle-slider::before { transform: translateX(22px); }
+        .toggle-label { font-size: 0.875rem; font-weight: 700; color: var(--text); }
+
+        /* Quill */
+        .ql-container {
+            font-family: var(--font); font-size: 1rem;
+            min-height: 300px; border-radius: 0 0 14px 14px;
+            border: 2px solid var(--border); border-top: none;
+        }
+        .ql-toolbar {
+            border-radius: 14px 14px 0 0;
+            border: 2px solid var(--border);
+            background: var(--matcha-cream);
+        }
+        .ql-editor { min-height: 300px; }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+            padding: 0.9rem 2rem; border-radius: 100px;
+            font-family: var(--font); font-size: 0.9375rem;
+            font-weight: 800; cursor: pointer; border: none;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative; overflow: hidden;
+        }
+        .btn::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.2) 50%, transparent 60%);
+            transform: translateX(-100%); transition: transform 0.6s;
+        }
+        .btn:hover::after { transform: translateX(100%); }
+
+        .btn--primary {
+            background: linear-gradient(135deg, var(--matcha) 0%, var(--matcha-dark) 100%);
+            color: var(--white); box-shadow: 0 4px 15px rgba(143,188,143,0.35);
+        }
+        .btn--primary:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(143,188,143,0.45);
+        }
+        .btn--primary:active { transform: translateY(-1px) scale(0.98); }
+        .btn--primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; box-shadow: none; }
+
+        .btn--secondary {
+            background: var(--white); color: var(--text);
+            border: 2px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .btn--secondary:hover {
+            border-color: var(--matcha); transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        }
+
+        .btn--publish {
+            background: linear-gradient(135deg, var(--pink) 0%, var(--pink-dark) 100%);
+            color: var(--white); box-shadow: 0 4px 15px rgba(242,166,183,0.35);
+        }
+        .btn--publish:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(242,166,183,0.45);
+        }
+        .btn--publish:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; box-shadow: none; }
+
+        .form-actions { display: flex; gap: 1rem; margin-top: 2rem; margin-bottom: 3rem; }
+
+        /* Status */
+        .status {
+            margin-top: 1rem; padding: 1rem 1.25rem; border-radius: 14px;
+            font-size: 0.875rem; font-weight: 700; display: none;
+            animation: slide-up 0.3s ease-out;
+        }
+        .status--success {
+            display: block; background: var(--matcha-cream); color: var(--matcha-dark);
+            border: 2px solid var(--matcha-light);
+        }
+        .status--error {
+            display: block; background: var(--pink-light); color: #b5445a;
+            border: 2px solid var(--pink);
+        }
+        .status--loading {
+            display: block; background: var(--lavender-light); color: #6b5ab5;
+            border: 2px solid var(--lavender);
+        }
+        .status--loading::before {
+            content: ''; display: inline-block; width: 14px; height: 14px;
+            border: 2px solid #6b5ab5; border-top-color: transparent;
+            border-radius: 50%; margin-right: 0.5rem; vertical-align: middle;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Preview */
+        .preview-container {
+            max-width: 1100px; margin: 2rem auto; padding: 0 1.5rem;
+            position: relative; z-index: 1;
+        }
+        .preview-frame {
+            width: 100%; height: 700px;
+            border: 2px solid var(--border); border-radius: 20px;
+            background: var(--white);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+        }
+        .revision-box {
+            max-width: 800px; margin: 1.5rem auto; padding: 0 1.5rem;
+            position: relative; z-index: 1;
+        }
+        .revision-box label {
+            display: block; font-size: 0.8125rem; font-weight: 800;
+            color: var(--matcha-dark); text-transform: uppercase;
+            letter-spacing: 0.08em; margin-bottom: 0.5rem;
+        }
+        .revision-box textarea {
+            width: 100%; padding: 0.85rem 1rem; min-height: 100px;
+            border: 2px solid var(--border); border-radius: 14px;
+            font-family: var(--font); font-size: 0.9375rem;
+            color: var(--text); background: var(--white); resize: vertical;
+        }
+        .revision-box textarea:focus {
+            outline: none; border-color: var(--matcha);
+            box-shadow: 0 0 0 4px rgba(143,188,143,0.15);
+        }
+        .revision-actions {
+            max-width: 800px; margin: 1rem auto 3rem; padding: 0 1.5rem;
+            display: flex; gap: 1rem; align-items: center;
+            position: relative; z-index: 1;
+        }
+        .revision-actions .spacer { flex: 1; }
+
+        /* Published */
+        .published-box {
+            max-width: 500px; margin: 4rem auto; padding: 3rem;
+            background: var(--white); border-radius: 24px;
+            border: 2px solid var(--matcha-light); text-align: center;
+            box-shadow: 0 8px 30px rgba(143,188,143,0.12);
+            animation: pop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative; z-index: 1;
+        }
+        @keyframes pop-in {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .published-box .pub-emoji { font-size: 3rem; margin-bottom: 1rem; }
+        .published-box h2 {
+            font-family: var(--font); font-size: 1.5rem;
+            color: var(--matcha-dark); font-weight: 800; margin-bottom: 0.5rem;
+        }
+        .published-box p { color: var(--text-light); margin-bottom: 1rem; line-height: 1.7; }
+        .published-box a { color: var(--pink-dark); font-weight: 700; text-decoration: underline; }
+
+        /* Login Gate */
+        .login-gate {
+            display: flex; align-items: center; justify-content: center;
+            min-height: calc(100vh - 80px); position: relative; z-index: 1;
+        }
+        .login-box {
+            max-width: 380px; width: 100%; padding: 2.5rem;
+            background: var(--white); border-radius: 24px;
+            border: 2px solid var(--matcha-light); text-align: center;
+            box-shadow: 0 8px 30px rgba(143,188,143,0.12);
+            animation: pop-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .login-box .login-emoji { font-size: 3rem; margin-bottom: 0.75rem; }
+        .login-box h2 {
+            font-family: var(--font); font-size: 1.375rem;
+            color: var(--matcha-dark); font-weight: 800; margin-bottom: 0.35rem;
+        }
+        .login-box p { color: var(--text-light); font-size: 0.875rem; margin-bottom: 1.5rem; }
+        .login-box input {
+            width: 100%; padding: 0.85rem 1rem; margin-bottom: 1rem;
+            border: 2px solid var(--border); border-radius: 14px;
+            font-family: var(--font); font-size: 0.9375rem;
+            color: var(--text); background: var(--matcha-cream); text-align: center;
+            transition: all 0.3s;
+        }
+        .login-box input:focus {
+            outline: none; border-color: var(--matcha);
+            box-shadow: 0 0 0 4px rgba(143,188,143,0.15);
+        }
+        .login-error {
+            font-size: 0.8125rem; color: #b5445a; margin-bottom: 1rem;
+            display: none; font-weight: 700;
+            animation: shake 0.4s ease;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+
+        .app-content { display: none; }
+
+        /* Manage Posts */
+        .manage-section {
+            max-width: 800px; margin: 0 auto 3rem; padding: 0 1.5rem;
+            position: relative; z-index: 1;
+        }
+        .manage-toggle {
+            display: flex; align-items: center; gap: 0.5rem;
+            font-size: 0.875rem; font-weight: 800; color: var(--text-light);
+            cursor: pointer; background: none; border: none;
+            font-family: var(--font); padding: 0.5rem 0;
+            transition: color 0.3s;
+        }
+        .manage-toggle:hover { color: var(--pink-dark); }
+        .manage-toggle .arrow { transition: transform 0.3s; display: inline-block; }
+        .manage-toggle.open .arrow { transform: rotate(90deg); }
+        .manage-panel { display: none; margin-top: 1rem; }
+        .manage-panel.open { display: block; animation: slide-up 0.3s ease-out; }
+        .post-list { list-style: none; }
+        .post-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0.85rem 1.25rem; margin-bottom: 0.5rem;
+            background: var(--white); border: 2px solid var(--border);
+            border-radius: 14px; transition: all 0.2s;
+        }
+        .post-item:hover { border-color: var(--pink); }
+        .post-item__name {
+            font-size: 0.875rem; font-weight: 700; color: var(--text);
+        }
+        .post-item__delete {
+            background: none; border: none; cursor: pointer;
+            font-size: 0.8rem; font-weight: 800; color: var(--text-light);
+            font-family: var(--font); padding: 0.4rem 0.8rem;
+            border-radius: 100px; transition: all 0.3s;
+        }
+        .post-item__delete:hover {
+            background: var(--pink-light); color: #b5445a;
+        }
+        .manage-status {
+            margin-top: 0.75rem; font-size: 0.8125rem;
+            font-weight: 700; color: var(--text-light);
+        }
+
+        @media (max-width: 640px) {
+            .form-row { grid-template-columns: 1fr; }
+            .admin-form, .revision-box, .revision-actions { padding: 0 1rem; }
+            .steps { gap: 0.75rem; padding: 1rem 0.5rem; }
+            .step-indicator span:not(.step-num) { display: none; }
+            .preview-frame { height: 500px; }
+            .login-box { margin: 0 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Floating sparkle background -->
+<div class="sparkle-bg" id="sparkle-bg"></div>
+
+<header class="admin-header">
+    <h1>Sarah's Blog Studio</h1>
+    <p>where the magic happens</p>
+</header>
+
+<!-- Login Gate -->
+<div id="login-gate" class="login-gate">
+    <div class="login-box">
+        <div class="login-emoji">🐱</div>
+        <h2>hey cutie</h2>
+        <p>enter the secret password to get in</p>
+        <input type="password" id="login-password" placeholder="psst... password" autofocus>
+        <p class="login-error" id="login-error">nope, try again bestie</p>
+        <button class="btn btn--primary" id="loginBtn" style="width:100%;">let me in</button>
+    </div>
+</div>
+
+<!-- App (hidden until login) -->
+<div class="app-content" id="app-content">
+
+<div class="steps">
+    <div class="step-indicator active" id="step1-ind">
+        <span class="step-num">🍵</span>
+        <span>Write</span>
+    </div>
+    <div class="step-indicator" id="step2-ind">
+        <span class="step-num">🧁</span>
+        <span>Preview &amp; Revise</span>
+    </div>
+    <div class="step-indicator" id="step3-ind">
+        <span class="step-num">✨</span>
+        <span>Published</span>
+    </div>
+</div>
+
+<!-- STEP 1: Input Form -->
+<div id="step-form" class="admin-form">
+    <div class="form-group">
+        <label for="title">article title 🍵</label>
+        <input type="text" id="title" placeholder="e.g., Why Internal Controls Matter More Than Ever">
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label for="slug">url slug 🔗</label>
+            <input type="text" id="slug" placeholder="auto-generated-from-title">
+            <p class="hint">Auto-generated from title. Edit if needed.</p>
+        </div>
+        <div class="form-group">
+            <label for="date">date 📅</label>
+            <input type="text" id="date" placeholder="e.g., March 2026 or 2026">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>article content 🐱</label>
+        <div id="editor"></div>
+    </div>
+
+    <div class="form-group">
+        <div class="toggle-group">
+            <label class="toggle">
+                <input type="checkbox" id="featured">
+                <span class="toggle-slider"></span>
+            </label>
+            <span class="toggle-label">⭐ Mark as Featured</span>
+        </div>
+    </div>
+
+    <div class="form-actions">
+        <button class="btn btn--primary" id="generateBtn">✨ Generate Preview</button>
+    </div>
+
+    <div id="generate-status" class="status"></div>
+</div>
+
+<!-- STEP 2: Preview & Revise -->
+<div id="step-preview" style="display:none;">
+    <div class="preview-container">
+        <iframe id="preview-frame" class="preview-frame"></iframe>
+    </div>
+
+    <div class="revision-box">
+        <label for="excerpt">excerpt (auto-generated — edit if u want) 📝</label>
+        <textarea id="excerpt" rows="2" placeholder="Summary for the blog listing page..."></textarea>
+        <br><br>
+        <label for="metaDesc">meta description (auto-generated) 🔍</label>
+        <textarea id="metaDesc" rows="2" placeholder="SEO description for search engines..."></textarea>
+        <br><br>
+        <label for="feedback">request changes 🧁</label>
+        <textarea id="feedback" placeholder="e.g., &quot;Move the stats banner lower&quot;, &quot;Change the bar chart title&quot;, &quot;Add a blockquote after paragraph 3&quot;..."></textarea>
+    </div>
+
+    <div class="revision-actions">
+        <button class="btn btn--secondary" id="backBtn">← Back</button>
+        <button class="btn btn--primary" id="reviseBtn">🔄 Revise</button>
+        <span class="spacer"></span>
+        <button class="btn btn--publish" id="publishBtn">🚀 Publish</button>
+    </div>
+
+    <div id="revise-status" class="status" style="max-width:800px;margin:0 auto 2rem;padding-left:1.5rem;padding-right:1.5rem;"></div>
+</div>
+
+<!-- STEP 3: Published -->
+<div id="step-published" style="display:none;">
+    <div class="published-box">
+        <div class="pub-emoji">🎉🐱✨</div>
+        <h2>yay it's live!</h2>
+        <p>your article is being deployed right meow. give it about 30 seconds.</p>
+        <p id="published-link"></p>
+        <br>
+        <button class="btn btn--primary" id="newPostBtn">🍵 Write Another</button>
+    </div>
+</div>
+
+<!-- Manage Posts -->
+<div class="manage-section" id="manage-section">
+    <button class="manage-toggle" id="manageToggle">
+        <span class="arrow">▶</span> 🗑️ Manage Existing Posts
+    </button>
+    <div class="manage-panel" id="managePanel">
+        <ul class="post-list" id="postList"></ul>
+        <p class="manage-status" id="manage-status"></p>
+    </div>
+</div>
+
+</div><!-- /app-content -->
+
+<script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+<script>
+// Floating background sparkles
+(function() {
+    var bg = document.getElementById('sparkle-bg');
+    var icons = ['✨','🐱','🍵','🧁','💖','🌸','⭐','🎀'];
+    for (var i = 0; i < 25; i++) {
+        var s = document.createElement('span');
+        s.textContent = icons[Math.floor(Math.random() * icons.length)];
+        s.style.left = Math.random() * 100 + '%';
+        s.style.top = Math.random() * 100 + '%';
+        s.style.animationDelay = (Math.random() * 8) + 's';
+        s.style.animationDuration = (6 + Math.random() * 6) + 's';
+        s.style.fontSize = (0.8 + Math.random() * 0.8) + 'rem';
+        bg.appendChild(s);
+    }
+})();
+
+// Click sparkle burst
+document.addEventListener('click', function(e) {
+    var icons = ['✨','💖','⭐','🌸'];
+    for (var i = 0; i < 5; i++) {
+        var s = document.createElement('span');
+        s.className = 'sparkle';
+        s.textContent = icons[Math.floor(Math.random() * icons.length)];
+        s.style.left = (e.clientX + (Math.random() - 0.5) * 40) + 'px';
+        s.style.top = (e.clientY + (Math.random() - 0.5) * 40) + 'px';
+        s.style.fontSize = (0.7 + Math.random() * 0.6) + 'rem';
+        s.style.animationDuration = (0.6 + Math.random() * 0.8) + 's';
+        document.body.appendChild(s);
+        setTimeout(function(el) { el.remove(); }, 1500, s);
+    }
+});
+
+var quill = new Quill('#editor', {
+    theme: 'snow',
+    placeholder: 'paste or write your article content here...',
+    modules: {
+        toolbar: [
+            [{ header: [2, 3, false] }],
+            ['bold', 'italic'],
+            [{ list: 'ordered' }, { list: 'bullet' }],
+            ['blockquote'],
+            ['clean']
+        ]
+    }
+});
+
+// State
+var currentBodyHtml = '';
+var adminPassword = '';
+
+// Login gate
+document.getElementById('loginBtn').addEventListener('click', doLogin);
+document.getElementById('login-password').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') doLogin();
+});
+
+async function doLogin() {
+    var pw = document.getElementById('login-password').value;
+    var errEl = document.getElementById('login-error');
+    var btn = document.getElementById('loginBtn');
+    if (!pw) return;
+
+    btn.disabled = true;
+    btn.textContent = '🐱 checking...';
+    errEl.style.display = 'none';
+
+    try {
+        var res = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password: pw })
+        });
+
+        if (res.ok) {
+            adminPassword = pw;
+            document.getElementById('login-gate').style.display = 'none';
+            document.getElementById('app-content').style.display = 'block';
+        } else {
+            errEl.style.display = '';
+            document.getElementById('login-password').value = '';
+            document.getElementById('login-password').focus();
+        }
+    } catch (err) {
+        errEl.textContent = 'connection error, try again babe';
+        errEl.style.display = '';
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'let me in';
+}
+
+// Auto-generate slug
+document.getElementById('title').addEventListener('input', function(e) {
+    document.getElementById('slug').value = e.target.value
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '')
+        .substring(0, 60);
+});
+
+// Show/hide steps
+function showStep(step) {
+    document.getElementById('step-form').style.display = step === 1 ? '' : 'none';
+    document.getElementById('step-preview').style.display = step === 2 ? '' : 'none';
+    document.getElementById('step-published').style.display = step === 3 ? '' : 'none';
+
+    var s1 = document.getElementById('step1-ind');
+    var s2 = document.getElementById('step2-ind');
+    var s3 = document.getElementById('step3-ind');
+
+    s1.className = 'step-indicator' + (step === 1 ? ' active' : ' done');
+    s2.className = 'step-indicator' + (step === 2 ? ' active' : (step > 2 ? ' done' : ''));
+    s3.className = 'step-indicator' + (step === 3 ? ' active' : '');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Build preview HTML for iframe
+function buildPreviewHtml(bodyContent) {
+    var title = document.getElementById('title').value.trim();
+    var date = document.getElementById('date').value.trim();
+    var excerpt = (document.getElementById('excerpt').value || '').trim();
+
+    return '<!DOCTYPE html><html lang="en"><head>' +
+        '<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">' +
+        '<link rel="preconnect" href="https://fonts.googleapis.com">' +
+        '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
+        '<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700&display=swap" rel="stylesheet">' +
+        '<link rel="stylesheet" href="/styles.css">' +
+        '<link rel="stylesheet" href="/blog.css">' +
+        '</head><body>' +
+        '<header class="article-header">' +
+        '<div class="container">' +
+        '<span class="article-header__date">' + date + '</span>' +
+        '<h1 class="article-header__title">' + title + '</h1>' +
+        '<p class="article-header__subtitle">' + excerpt + '</p>' +
+        '</div></header>' +
+        '<article class="article"><div class="container article__container">' +
+        bodyContent +
+        '</div></article>' +
+        '<script>' +
+        'var observer = new IntersectionObserver(function(entries) {' +
+        '  entries.forEach(function(entry) {' +
+        '    if (entry.isIntersecting) { entry.target.classList.add("animated"); observer.unobserve(entry.target); }' +
+        '  });' +
+        '}, { threshold: 0.3 });' +
+        'document.querySelectorAll(".stat-ring, .bar-chart").forEach(function(el) { observer.observe(el); });' +
+        '<\/script>' +
+        '</body></html>';
+}
+
+function updatePreview() {
+    var iframe = document.getElementById('preview-frame');
+    iframe.srcdoc = buildPreviewHtml(currentBodyHtml);
+}
+
+// STEP 1: Generate Preview
+document.getElementById('generateBtn').addEventListener('click', async function() {
+    var btn = this;
+    var statusEl = document.getElementById('generate-status');
+
+    var password = adminPassword;
+    var title = document.getElementById('title').value.trim();
+    var content = quill.root.innerHTML;
+
+    if (!title || !content || content === '<p><br></p>') {
+        statusEl.className = 'status status--error';
+        statusEl.textContent = '🐱 fill in the title and content first!';
+        return;
+    }
+
+    var slug = document.getElementById('slug').value.trim();
+    var date = document.getElementById('date').value.trim();
+
+    if (!slug || !date) {
+        statusEl.className = 'status status--error';
+        statusEl.textContent = '🐱 need the slug and date too!';
+        return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = '✨ generating...';
+    statusEl.className = 'status status--loading';
+    statusEl.textContent = 'sprinkling visual magic on your content... hang tight 🍵';
+
+    try {
+        var res = await fetch('/api/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password: password, title: title, content: content })
+        });
+
+        var data = await res.json();
+
+        if (res.ok) {
+            currentBodyHtml = data.html;
+            if (data.excerpt) document.getElementById('excerpt').value = data.excerpt;
+            if (data.metaDescription) document.getElementById('metaDesc').value = data.metaDescription;
+            statusEl.className = 'status';
+            statusEl.style.display = 'none';
+            updatePreview();
+            showStep(2);
+        } else {
+            statusEl.className = 'status status--error';
+            statusEl.textContent = '😿 ' + (data.error || 'something went wrong, try again!');
+        }
+    } catch (err) {
+        statusEl.className = 'status status--error';
+        statusEl.textContent = '😿 network error — check your connection babe';
+    }
+
+    btn.disabled = false;
+    btn.textContent = '✨ Generate Preview';
+});
+
+// STEP 2: Back to Edit
+document.getElementById('backBtn').addEventListener('click', function() {
+    showStep(1);
+});
+
+// STEP 2: Revise
+document.getElementById('reviseBtn').addEventListener('click', async function() {
+    var btn = this;
+    var statusEl = document.getElementById('revise-status');
+    var feedback = document.getElementById('feedback').value.trim();
+
+    if (!feedback) {
+        statusEl.className = 'status status--error';
+        statusEl.textContent = '🐱 tell me what to change!';
+        return;
+    }
+
+    var password = adminPassword;
+
+    btn.disabled = true;
+    btn.textContent = '🔄 revising...';
+    statusEl.className = 'status status--loading';
+    statusEl.textContent = 'making your changes... ✨';
+
+    try {
+        var res = await fetch('/api/revise', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password: password, currentHtml: currentBodyHtml, feedback: feedback })
+        });
+
+        var data = await res.json();
+
+        if (res.ok) {
+            currentBodyHtml = data.html;
+            updatePreview();
+            document.getElementById('feedback').value = '';
+            statusEl.className = 'status status--success';
+            statusEl.textContent = '🎉 changes applied! check the preview above';
+        } else {
+            statusEl.className = 'status status--error';
+            statusEl.textContent = '😿 ' + (data.error || 'revision failed, try again!');
+        }
+    } catch (err) {
+        statusEl.className = 'status status--error';
+        statusEl.textContent = '😿 network error — try again';
+    }
+
+    btn.disabled = false;
+    btn.textContent = '🔄 Revise';
+});
+
+// STEP 2: Publish
+document.getElementById('publishBtn').addEventListener('click', async function() {
+    var btn = this;
+    var statusEl = document.getElementById('revise-status');
+
+    var password = adminPassword;
+    var title = document.getElementById('title').value.trim();
+    var slug = document.getElementById('slug').value.trim();
+    var date = document.getElementById('date').value.trim();
+    var excerpt = document.getElementById('excerpt').value.trim();
+    var metaDescription = document.getElementById('metaDesc').value.trim() || excerpt;
+    var featured = document.getElementById('featured').checked;
+
+    btn.disabled = true;
+    btn.textContent = '🚀 publishing...';
+    statusEl.className = 'status status--loading';
+    statusEl.textContent = 'pushing to the world... 🌍✨';
+
+    try {
+        var res = await fetch('/api/publish', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                password: password,
+                title: title,
+                slug: slug,
+                date: date,
+                metaDescription: metaDescription,
+                excerpt: excerpt,
+                content: currentBodyHtml,
+                featured: featured
+            })
+        });
+
+        var data = await res.json();
+
+        if (res.ok) {
+            document.getElementById('published-link').innerHTML =
+                '<a href="' + data.url + '" target="_blank">view your article →</a>';
+            showStep(3);
+        } else {
+            statusEl.className = 'status status--error';
+            statusEl.textContent = '😿 ' + (data.error || 'publish failed, try again!');
+        }
+    } catch (err) {
+        statusEl.className = 'status status--error';
+        statusEl.textContent = '😿 network error — try again';
+    }
+
+    btn.disabled = false;
+    btn.textContent = '🚀 Publish';
+});
+
+// Manage Posts
+document.getElementById('manageToggle').addEventListener('click', function() {
+    var panel = document.getElementById('managePanel');
+    var btn = this;
+    var isOpen = panel.classList.contains('open');
+
+    if (isOpen) {
+        panel.classList.remove('open');
+        btn.classList.remove('open');
+    } else {
+        panel.classList.add('open');
+        btn.classList.add('open');
+        loadPosts();
+    }
+});
+
+async function loadPosts() {
+    var listEl = document.getElementById('postList');
+    var statusEl = document.getElementById('manage-status');
+    listEl.innerHTML = '';
+    statusEl.textContent = '🐱 loading posts...';
+
+    try {
+        var res = await fetch('/api/list-posts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password: adminPassword })
+        });
+        var data = await res.json();
+
+        if (!res.ok) { statusEl.textContent = '😿 ' + data.error; return; }
+
+        if (data.posts.length === 0) {
+            statusEl.textContent = 'no posts yet!';
+            return;
+        }
+
+        statusEl.textContent = '';
+        data.posts.forEach(function(post) {
+            var li = document.createElement('li');
+            li.className = 'post-item';
+            li.innerHTML = '<span class="post-item__name">📄 ' + post.slug + '</span>' +
+                '<button class="post-item__delete" data-slug="' + post.slug + '">delete 🗑️</button>';
+            listEl.appendChild(li);
+        });
+
+        listEl.querySelectorAll('.post-item__delete').forEach(function(btn) {
+            btn.addEventListener('click', function() { deletePost(this.dataset.slug); });
+        });
+    } catch (err) {
+        statusEl.textContent = '😿 failed to load posts';
+    }
+}
+
+async function deletePost(slug) {
+    if (!confirm('delete "' + slug + '"? this can\'t be undone! 🫣')) return;
+
+    var statusEl = document.getElementById('manage-status');
+    statusEl.textContent = '🗑️ deleting ' + slug + '...';
+
+    try {
+        var res = await fetch('/api/delete-post', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password: adminPassword, slug: slug })
+        });
+        var data = await res.json();
+
+        if (res.ok) {
+            statusEl.textContent = '✨ "' + slug + '" deleted!';
+            loadPosts();
+        } else {
+            statusEl.textContent = '😿 ' + (data.error || 'failed to delete');
+        }
+    } catch (err) {
+        statusEl.textContent = '😿 network error';
+    }
+}
+
+// STEP 3: New Post
+document.getElementById('newPostBtn').addEventListener('click', function() {
+    document.getElementById('title').value = '';
+    document.getElementById('slug').value = '';
+    document.getElementById('date').value = '';
+    document.getElementById('excerpt').value = '';
+    document.getElementById('metaDesc').value = '';
+    document.getElementById('featured').checked = false;
+    document.getElementById('feedback').value = '';
+    quill.setContents([]);
+    currentBodyHtml = '';
+    document.getElementById('generate-status').style.display = 'none';
+    document.getElementById('revise-status').style.display = 'none';
+    showStep(1);
+});
+</script>
+
+</body>
+</html>
