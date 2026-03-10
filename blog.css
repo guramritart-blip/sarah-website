@@ -132,6 +132,20 @@
 }
 .article__container strong { color: var(--navy); }
 
+/* Stats Banner — 3-up compact variant */
+.stats-banner--trio {
+    grid-template-columns: repeat(3, 1fr);
+    padding: 1.5rem 2rem;
+    gap: 1rem;
+}
+.stats-banner--trio .stat-ring {
+    width: 72px;
+    height: 72px;
+}
+.stats-banner--trio .stat-ring__value {
+    font-size: 1.1rem;
+}
+
 /* Speech Pull Quote */
 .speech-quote {
     margin: 2.5rem 0;
