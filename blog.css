@@ -132,6 +132,66 @@
 }
 .article__container strong { color: var(--navy); }
 
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin: 2.5rem 0;
+}
+.stat-card {
+    background: var(--navy);
+    border-radius: 12px;
+    padding: 1.5rem 1.25rem;
+    text-align: center;
+}
+.stat-card__number {
+    font-family: var(--font-head);
+    font-size: 2.25rem;
+    font-weight: 900;
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+}
+.stat-card__label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.75);
+    line-height: 1.4;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0 !important;
+}
+
+/* Callout Box */
+.fact-callout {
+    background: rgba(201,168,76,0.08);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 12px;
+    padding: 1.5rem 1.75rem;
+    margin: 2rem 0;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+.fact-callout__icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+}
+.fact-callout__text {
+    font-size: 0.9375rem;
+    color: var(--text);
+    line-height: 1.7;
+    margin-bottom: 0 !important;
+}
+.fact-callout__text strong { color: var(--navy); }
+
+@media (max-width: 600px) {
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
 /* Speech Pull Quote */
 .speech-quote {
     margin: 2.5rem 0;
