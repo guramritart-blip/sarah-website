@@ -1,6 +1,6 @@
 /* ========================================
    Sarah Eileen Mehta - Professional Portfolio
-   Color: Calcite | Type: Playfair + DM Sans
+   Color: Navy + Gold | Type: Playfair + DM Sans
    ======================================== */
 
 /* --- Custom Fonts --- */
@@ -41,17 +41,16 @@
 
 /* --- Variables --- */
 :root {
-    --navy:       #3D405B;
-    --navy-light: #4a4d68;
-    --navy-mid:   #575a75;
-    --gold:       #E07A5F;
-    --gold-light: #F2CC8F;
-    --gold-pale:  #F4F1DE;
-    --sage:       #81B29A;
+    --navy:       #0f1b2d;
+    --navy-light: #1a2d4a;
+    --navy-mid:   #243b5e;
+    --gold:       #c9a84c;
+    --gold-light: #dfc06a;
+    --gold-pale:  #f5ecd4;
     --white:      #ffffff;
-    --off-white:  #F4F1DE;
-    --gray-100:   #ece9d9;
-    --gray-200:   #ddd9c8;
+    --off-white:  #f8f7f4;
+    --gray-100:   #f0eeeb;
+    --gray-200:   #e0ddd8;
     --gray-400:   #9e9a93;
     --gray-600:   #6b6760;
     --gray-800:   #3d3a35;
@@ -102,7 +101,7 @@ strong { font-weight: 600; }
     transition: background var(--transition), padding var(--transition), box-shadow var(--transition), transform 0.3s ease;
 }
 .nav--scrolled {
-    background: rgba(61, 64, 91, 0.97);
+    background: rgba(15, 27, 45, 0.97);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     padding: 0.75rem 0;
@@ -150,13 +149,13 @@ strong { font-weight: 600; }
 .hero::before {
     content: ''; position: absolute; top: -40%; right: -20%;
     width: 700px; height: 700px; border-radius: 50%;
-    background: radial-gradient(circle, rgba(224,122,95,0.08) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 70%);
     pointer-events: none;
 }
 .hero::after {
     content: ''; position: absolute; bottom: -30%; left: -15%;
     width: 500px; height: 500px; border-radius: 50%;
-    background: radial-gradient(circle, rgba(224,122,95,0.05) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(201,168,76,0.05) 0%, transparent 70%);
     pointer-events: none;
 }
 .hero__container {
@@ -189,7 +188,7 @@ strong { font-weight: 600; }
     transition: all var(--transition); border: none; letter-spacing: 0.01em;
 }
 .btn--primary { background: var(--gold); color: var(--white); }
-.btn--primary:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(224,122,95,0.3); }
+.btn--primary:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(201,168,76,0.3); }
 .btn--ghost { background: transparent; color: var(--white); border: 1.5px solid rgba(255,255,255,0.25); }
 .btn--ghost:hover { border-color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.05); }
 
@@ -264,7 +263,7 @@ strong { font-weight: 600; }
 
 /* ============ IMPACT ============ */
 .impact { background: var(--navy); }
-.impact .section__label { background: rgba(224,122,95,0.15); color: var(--gold); }
+.impact .section__label { background: rgba(201,168,76,0.15); color: var(--gold); }
 .impact .section__title { color: var(--white); }
 .impact .accent { color: var(--gold); }
 
@@ -276,7 +275,7 @@ strong { font-weight: 600; }
     border-radius: 12px; padding: 2rem; text-align: center;
     transition: all var(--transition);
 }
-.impact__card:hover { background: rgba(255,255,255,0.07); border-color: rgba(224,122,95,0.3); }
+.impact__card:hover { background: rgba(255,255,255,0.07); border-color: rgba(201,168,76,0.3); }
 .impact__number {
     font-family: var(--font-head); font-size: 3rem; font-weight: 800;
     color: var(--gold); line-height: 1; margin-bottom: 0.75rem;
@@ -485,7 +484,7 @@ strong { font-weight: 600; }
 
 /* ============ CONTACT ============ */
 .contact { background: var(--navy); }
-.contact .section__label { background: rgba(224,122,95,0.15); color: var(--gold); }
+.contact .section__label { background: rgba(201,168,76,0.15); color: var(--gold); }
 .contact .section__title { color: var(--white); }
 .contact .section__subtitle { color: rgba(255,255,255,0.6); }
 .contact .accent { color: var(--gold); }
@@ -496,7 +495,7 @@ strong { font-weight: 600; }
     border-radius: 12px; padding: 2rem; text-align: center;
     transition: all var(--transition); display: block;
 }
-.contact__card:hover { background: rgba(255,255,255,0.07); border-color: rgba(224,122,95,0.3); }
+.contact__card:hover { background: rgba(255,255,255,0.07); border-color: rgba(201,168,76,0.3); }
 .contact__icon { color: var(--gold); margin-bottom: 0.75rem; display: flex; justify-content: center; }
 .contact__label {
     display: block; font-size: 0.75rem; font-weight: 600;

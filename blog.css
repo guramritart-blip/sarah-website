@@ -11,7 +11,7 @@
     font-weight: 800; color: var(--white); line-height: 1.1;
     margin-bottom: 1rem; letter-spacing: -0.02em;
 }
-.blog-header .section__label { background: rgba(224,122,95,0.15); color: var(--gold); }
+.blog-header .section__label { background: rgba(201,168,76,0.15); color: var(--gold); }
 .blog-header__subtitle {
     font-size: 1.05rem; color: rgba(255,255,255,0.6);
     max-width: 600px; margin: 0 auto; line-height: 1.7;
@@ -80,7 +80,7 @@
 .article-header__date {
     font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
     letter-spacing: 0.15em; color: var(--gold); margin-bottom: 1rem;
-    display: inline-block; background: rgba(224,122,95,0.15);
+    display: inline-block; background: rgba(201,168,76,0.15);
     padding: 0.3rem 1rem; border-radius: 100px;
 }
 .article-header__title {
@@ -335,13 +335,13 @@
 }
 .process-flow__icon {
     width: 52px; height: 52px; border-radius: 50%;
-    background: rgba(224,122,95,0.15); border: 2px solid var(--gold);
+    background: rgba(201,168,76,0.15); border: 2px solid var(--gold);
     display: flex; align-items: center; justify-content: center;
     font-size: 1.25rem; margin-bottom: 0.6rem;
     transition: transform 0.3s ease, background 0.3s ease;
 }
 .process-flow__step:hover .process-flow__icon {
-    transform: scale(1.1); background: rgba(224,122,95,0.3);
+    transform: scale(1.1); background: rgba(201,168,76,0.3);
 }
 .process-flow__label {
     font-size: 0.6875rem; font-weight: 600; color: rgba(255,255,255,0.8);
