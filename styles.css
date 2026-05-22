@@ -696,6 +696,7 @@ strong { font-weight: 600; }
 /* Capabilities grid (reuses service-card look) */
 .capabilities { background: var(--white); }
 .capabilities__grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+.capabilities__grid--three { grid-template-columns: repeat(3, 1fr); }
 .capability-card {
     background: var(--off-white); border: 1px solid var(--gray-200);
     border-radius: 14px; padding: 2rem; transition: all var(--transition);
@@ -741,9 +742,11 @@ strong { font-weight: 600; }
 @media (max-width: 1024px) {
     .engagement__grid { grid-template-columns: 1fr; }
     .process__grid { grid-template-columns: repeat(2, 1fr); }
+    .capabilities__grid--three { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 768px) {
-    .capabilities__grid { grid-template-columns: 1fr; }
+    .capabilities__grid,
+    .capabilities__grid--three { grid-template-columns: 1fr; }
     .process__grid { grid-template-columns: 1fr; }
     .services-page__hero-actions { flex-direction: column; align-items: stretch; }
 }
