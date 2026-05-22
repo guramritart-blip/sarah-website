@@ -726,6 +726,8 @@ strong { font-weight: 600; }
 .process__step p { font-size: 0.875rem; color: var(--text-light); line-height: 1.6; }
 
 /* Capabilities at a glance + audience (Services page) */
+.capabilities-glance { background: var(--white); }
+.capabilities-glance .skills { margin-top: 0; }
 .skills { margin-top: 3.5rem; }
 .skills__intro {
     text-align: center; max-width: 560px; margin: 0 auto 2rem;
