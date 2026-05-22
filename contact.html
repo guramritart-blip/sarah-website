@@ -65,6 +65,7 @@
 <section class="contact-page__form-section">
     <div class="container">
         <form class="contact-page__form" id="contactForm">
+            <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
             <div class="form__row">
                 <div class="form__group">
                     <label for="firstName" class="form__label form__label--light">First Name *</label>
@@ -190,22 +191,35 @@ document.getElementById('contactForm').addEventListener('submit', async (e) => {
     btn.textContent = 'Sending...';
     btn.disabled = true;
 
+    // Honeypot: bots fill hidden fields. Pretend success without sending.
+    if (form.website && form.website.value) { window.location.href = 'thank-you.html'; return; }
+
     const data = {
-        firstName: form.firstName.value,
-        lastName: form.lastName.value,
-        email: form.email.value,
-        phone: form.phone.value,
-        organization: form.organization.value,
-        purpose: form.purpose.value,
+        firstName: form.firstName.value.trim(),
+        lastName: form.lastName.value.trim(),
+        email: form.email.value.trim(),
+        phone: form.phone.value.trim(),
+        organization: form.organization.value.trim(),
+        purpose: form.purpose.value.trim(),
         submittedAt: new Date().toISOString()
     };
 
+    // Guard: don't send blank inquiries.
+    if (!data.firstName || !data.email) {
+        btn.textContent = 'Please fill in the required fields';
+        btn.disabled = false;
+        setTimeout(() => { btn.textContent = originalText; }, 3000);
+        return;
+    }
+
     try {
+        // Send as url-encoded form data: this content type survives `no-cors`,
+        // so Zapier receives named fields instead of an unparsed text/plain blob.
         await fetch(WEBHOOK_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
             mode: 'no-cors',
-            body: JSON.stringify(data)
+            body: new URLSearchParams(data).toString()
         });
         window.location.href = 'thank-you.html';
     } catch (err) {
