@@ -589,48 +589,59 @@
 
 <style>
   .srcModal{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;
-    background:rgba(10,14,13,.62);backdrop-filter:blur(3px);padding:24px}
-  .srcModal.open{display:flex}
-  .srcPanel{background:var(--paper);border:1px solid var(--line-strong);border-radius:8px;
-    width:min(960px,100%);height:min(88vh,100%);display:flex;flex-direction:column;overflow:hidden;
-    box-shadow:0 30px 80px rgba(0,0,0,.45)}
-  .srcHead{display:flex;align-items:center;gap:14px;padding:12px 16px;border-bottom:1px solid var(--line);
-    font-family:var(--mono);font-size:12.5px;color:var(--slate);background:var(--card)}
-  .srcHead .t{color:var(--ink);font-weight:600}
+    background:rgba(10,14,13,.66);backdrop-filter:blur(4px);padding:24px}
+  .srcModal.open{display:flex;animation:srcFade .16s ease}
+  @keyframes srcFade{from{opacity:0}to{opacity:1}}
+  .srcPanel{background:var(--paper);border:1px solid var(--line-strong);border-radius:10px;
+    width:min(820px,100%);max-height:88vh;display:flex;flex-direction:column;overflow:hidden;
+    box-shadow:0 30px 80px rgba(0,0,0,.5)}
+  .srcHead{display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid var(--line);
+    font-family:var(--mono);font-size:12.5px;color:var(--slate);background:var(--card);flex:none}
+  .srcHead .t{color:var(--ink);font-weight:600;letter-spacing:.02em}
   .srcHead .sp{flex:1}
   .srcHead a.full{color:var(--teal);text-decoration:none;border-bottom:1px dotted var(--teal)}
   .srcHead button{border:1px solid var(--line-strong);background:var(--paper);color:var(--ink);
-    font-family:var(--mono);font-size:12px;border-radius:5px;padding:5px 11px;cursor:pointer;line-height:1}
+    font-family:var(--mono);font-size:12px;border-radius:6px;padding:5px 11px;cursor:pointer;line-height:1}
   .srcHead button:hover{background:var(--paper-2)}
-  .srcPanel iframe{flex:1;width:100%;border:0;background:#525659}
-  @media (max-width:560px){.srcModal{padding:0}.srcPanel{border-radius:0;height:100%}}
+  .srcBody{overflow:auto;padding:18px;background:var(--paper-2)}
+  .srcBody img{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:4px;
+    background:#fff;box-shadow:0 6px 20px rgba(0,0,0,.12)}
+  .srcCap{font-family:var(--mono);font-size:11px;color:var(--slate);text-align:center;margin-top:12px}
+  @media (max-width:560px){.srcModal{padding:0}.srcPanel{border-radius:0;max-height:100%;height:100%}}
 </style>
 
-<div class="srcModal" id="srcModal" role="dialog" aria-modal="true" aria-label="Source document viewer">
+<div class="srcModal" id="srcModal" role="dialog" aria-modal="true" aria-label="Source excerpt">
   <div class="srcPanel">
     <div class="srcHead">
       <span class="t">CEC Staff Assessment</span><span class="sp" id="srcPg"></span>
-      <a class="full" id="srcFull" href="corby-staff-assessment.pdf" target="_blank" rel="noopener">Open full PDF &nearr;</a>
+      <a class="full" id="srcFull" href="corby-staff-assessment.pdf" target="_blank" rel="noopener">Full page &nearr;</a>
       <button type="button" id="srcClose" aria-label="Close">Close &times;</button>
     </div>
-    <iframe id="srcFrame" title="CEC Staff Assessment source page"></iframe>
+    <div class="srcBody">
+      <img id="srcImg" alt="Cited section of the CEC Staff Assessment">
+      <div class="srcCap" id="srcCap"></div>
+    </div>
   </div>
 </div>
 <script>
 (function(){
   var PDF="corby-staff-assessment.pdf";
   var modal=document.getElementById('srcModal'),
-      frame=document.getElementById('srcFrame'),
+      img=document.getElementById('srcImg'),
+      body=document.querySelector('.srcBody'),
       pglab=document.getElementById('srcPg'),
+      cap=document.getElementById('srcCap'),
       full=document.getElementById('srcFull');
   function open(pg){
-    frame.src=PDF+'#page='+pg+'&view=FitH&zoom=page-width';
+    img.src='corby-src/p'+pg+'.png';
     full.href=PDF+'#page='+pg;
-    pglab.textContent='page '+pg;
+    pglab.textContent='the cited section';
+    cap.textContent='Staff Assessment, p.'+pg+'  \u00b7  highlighted text is the language cited above';
+    body.scrollTop=0;
     modal.classList.add('open');
     document.body.style.overflow='hidden';
   }
-  function close(){modal.classList.remove('open');frame.src='';document.body.style.overflow='';}
+  function close(){modal.classList.remove('open');document.body.style.overflow='';}
   document.addEventListener('click',function(e){
     var a=e.target.closest&&e.target.closest('a.cx');
     if(a){e.preventDefault();open(a.getAttribute('data-pg'));return;}
