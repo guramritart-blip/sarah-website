@@ -1,0 +1,8 @@
+*.dmg
+*.mov
+*.mp4
+*.zip
+GMT*.mp4
+camo-macos-latest.zip
+.env
+data /
